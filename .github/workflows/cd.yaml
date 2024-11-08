@@ -1,0 +1,35 @@
+name: Build and Push Container Image
+
+on:
+  schedule:
+    - cron: '0 8 * * 2' # https://crontab.guru/#0_8_*_*_2
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: ghcr.io/${{ github.repository }}/debug-container:latest
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Authenticate with GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | podman login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build and tag container image
+        run: |
+          podman build -t $IMAGE_NAME .
+
+      - name: Push container image to GitHub Container Registry
+        run: |
+          podman push $IMAGE_NAME
