@@ -2,7 +2,7 @@ name: Build and Push Container Image
 
 on:
   schedule:
-    - cron: '0 8 * * 2' # https://crontab.guru/#0_8_*_*_2
+    - cron: '0 8 1 * *' # https://crontab.guru/#0_8_1_*_*
   push:
     branches:
       - main
